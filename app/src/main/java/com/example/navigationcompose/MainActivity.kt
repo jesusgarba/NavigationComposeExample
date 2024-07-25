@@ -5,14 +5,22 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.NavType
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
+import com.example.navigationcompose.presentation.ScreenDetail
+import com.example.navigationcompose.presentation.ScreenHome
+import com.example.navigationcompose.presentation.ScreenLogin
+import com.example.navigationcompose.presentation.ScreenStateProduct
+import com.example.navigationcompose.presentation.model.Routes
 import com.example.navigationcompose.ui.theme.NavigationComposeTheme
-import dagger.hilt.EntryPoint
 import dagger.hilt.android.AndroidEntryPoint
 
 
@@ -24,10 +32,34 @@ class MainActivity : ComponentActivity() {
         setContent {
             NavigationComposeTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
+                    val navigationController = rememberNavController()
+                    NavHost(
+                        navController = navigationController,
+                        startDestination = Routes.ScreenLogin.route
+                    ) {
+                        composable(Routes.ScreenLogin.route) { ScreenLogin(navigationController) }
+                        composable(Routes.ScreenHome.route) { ScreenHome(navigationController) }
+                        composable(
+                            Routes.ScreenDetail.route, arguments = listOf(
+                                navArgument("id") { type = NavType.IntType })
+                        )
+                        { backStackEntry ->
+                            ScreenDetail(
+                                navigationController,
+                                backStackEntry.arguments?.getInt("id") ?: 0
+                            )
+                        }
+                        composable(
+                            Routes.ScreenStateProduct.route, arguments = listOf(
+                                navArgument("status") { defaultValue = "STOCK ERROR!" })
+                        )
+                        { backStackEntry ->
+                            ScreenStateProduct(
+                                navigationController = navigationController,
+                                backStackEntry.arguments?.getString("state")
+                            )
+                        }
+                    }
                 }
             }
         }
