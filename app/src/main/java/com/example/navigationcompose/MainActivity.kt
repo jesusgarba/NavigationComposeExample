@@ -28,37 +28,26 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             NavigationComposeTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    val navigationController = rememberNavController()
-                    NavHost(
-                        navController = navigationController,
-                        startDestination = Routes.ScreenLogin.route
-                    ) {
-                        composable(Routes.ScreenLogin.route) { ScreenLogin(navigationController) }
-                        composable(Routes.ScreenHome.route) { ScreenHome(navigationController) }
-                        composable(
-                            Routes.ScreenDetail.route, arguments = listOf(
-                                navArgument("id") { type = NavType.IntType })
-                        )
-                        { backStackEntry ->
-                            ScreenDetail(
-                                navigationController,
-                                backStackEntry.arguments?.getInt("id") ?: 0
-                            )
-                        }
-                        composable(
-                            Routes.ScreenStateProduct.route, arguments = listOf(
-                                navArgument("status") { defaultValue = "STOCK ERROR!" })
-                        )
-                        { backStackEntry ->
-                            ScreenStateProduct(
-                                navigationController = navigationController,
-                                backStackEntry.arguments?.getString("state")
-                            )
-                        }
-                    }
+                val navigationController = rememberNavController()
+                NavHost(
+                    navController = navigationController,
+                    startDestination = Routes.ScreenLogin.route
+                ) {
+                    composable(Routes.ScreenLogin.route) { ScreenLogin(navigationController) }
+                    composable(Routes.ScreenHome.route) { ScreenHome(navigationController) }
+                    composable(Routes.ScreenDetail.route, arguments =
+                        listOf(navArgument("id") { type = NavType.IntType }))
+                            {
+                                backStackEntry -> ScreenDetail(navigationController, backStackEntry.arguments?.getInt("id") ?: 0)
+                            }
+                    composable(Routes.ScreenStateProduct.route, arguments =
+                        listOf(navArgument("status") { defaultValue = "STOCK ERROR!" }))
+                            {
+                                backStackEntry -> ScreenStateProduct(navigationController = navigationController, backStackEntry.arguments?.getString("state"))
+                            }
                 }
             }
+
         }
     }
 }
